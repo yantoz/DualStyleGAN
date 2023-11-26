@@ -34,8 +34,10 @@ def get_landmark(filepath, predictor):
 	:return: np.array shape=(68, 2)
 	"""
 	detector = dlib.get_frontal_face_detector()
-
-	img = dlib.load_rgb_image(filepath)
+	if type(filepath) == str:
+		img = dlib.load_rgb_image(filepath)
+	else:
+		img = filepath
 	dets = detector(img, 1)
 
 	for k, d in enumerate(dets):
@@ -87,7 +89,10 @@ def align_face(filepath, predictor):
 	qsize = np.hypot(*x) * 2
 
 	# read image
-	img = PIL.Image.open(filepath)
+	if type(filepath) == str:
+		img = PIL.Image.open(filepath)
+	else:
+		img = PIL.Image.fromarray(filepath)
 
 	output_size = 256
 	transform_size = 256
