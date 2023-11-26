@@ -1,14 +1,5 @@
 import os
-import numpy as np
-import torch
-from util import save_image, load_image
 import argparse
-from argparse import Namespace
-from torchvision import transforms
-from torch.nn import functional as F
-import torchvision
-from model.dualstylegan import DualStyleGAN
-from model.encoder.psp import pSp
 
 class TestOptions():
     def __init__(self):
@@ -28,6 +19,7 @@ class TestOptions():
         self.parser.add_argument("--align_face", action="store_true", help="apply face alignment to the content image")
         self.parser.add_argument("--exstyle_name", type=str, default=None, help="name of the extrinsic style codes")
         self.parser.add_argument("--wplus", action="store_true", help="use original pSp encoder to extract the intrinsic style code")
+        self.parser.add_argument("--cpu", action="store_true", help="if true, only use cpu")
 
     def parse(self):
         self.opt = self.parser.parse_args()
@@ -57,12 +49,27 @@ def run_alignment(args):
     return aligned_image
 
 
-if __name__ == "__main__":
-    device = "cuda"
+parser = TestOptions()
+args = parser.parse()
+print('*'*98)
 
-    parser = TestOptions()
-    args = parser.parse()
-    print('*'*98)
+device = "cpu" if args.cpu else "cuda"
+
+if args.cpu:
+    os.environ['CUDA_VISIBLE_DEVICES'] = ""
+
+import numpy as np
+import torch
+from util import save_image, load_image
+from argparse import Namespace
+from torchvision import transforms
+from torch.nn import functional as F
+import torchvision
+from model.dualstylegan import DualStyleGAN
+from model.encoder.psp import pSp
+
+
+if __name__ == "__main__":
     
     transform = transforms.Compose([
     transforms.ToTensor(),

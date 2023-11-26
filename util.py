@@ -7,7 +7,11 @@ import torch
 from torch.utils import data
 from torch.nn import functional as F
 from torch import autograd
-from model.stylegan.op import conv2d_gradfix
+import os
+if os.environ.get('CUDA_VISIBLE_DEVICES', None) == "":
+    from model.stylegan.op_cpu import conv2d_gradfix
+else:
+    from model.stylegan.op import conv2d_gradfix
 import random
 import math
     
